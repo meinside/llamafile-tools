@@ -12,7 +12,7 @@
 
 # llamafile path
 WORKING_DIR="$(readlink -f "$(dirname "$0")")"
-SUMMARIZER_LLAMAFILE_PATH="$WORKING_DIR/Mistral-7B-Instruct-v0.2(f16).llamafile"
+LLAMAFILE_PATH="$WORKING_DIR/Mistral-7B-Instruct-v0.2(f16).llamafile"
 
 # variables
 TEMPERATURE=0
@@ -41,7 +41,7 @@ function warn {
 # $1: text to answer
 function do_answer {
     text="$1"
-    result=$($SUMMARIZER_LLAMAFILE_PATH -p "[INST]다음에 대하여 한국어로 응답하시오: ${text}[/INST]" --temp $TEMPERATURE -n $TOKENS_PREDICT -c $PROMPT_CONTEXT_SIZE --silent-prompt 2> /dev/null)
+    result=$($LLAMAFILE_PATH -p "[INST]다음에 대하여 한국어로 응답하시오: ${text}[/INST]" --temp $TEMPERATURE -n $TOKENS_PREDICT -c $PROMPT_CONTEXT_SIZE --silent-prompt 2> /dev/null)
 
     info ">>>"
     info "$result"
@@ -57,6 +57,10 @@ function print_usage {
 
 
 # (main)
+if [ ! -x "$LLAMAFILE_PATH" ]; then
+    echo "Llamafile not found, or not executable: $LLAMAFILE_PATH"
+    exit 1
+fi
 if [ $# -ge 1 ]; then
     do_answer "$1"
 else
