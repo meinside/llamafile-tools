@@ -9,7 +9,7 @@
 
 # llamafile path
 WORKING_DIR="$(readlink -f "$(dirname "$0")")"
-LLAMAFILE_PATH="$WORKING_DIR/Mistral-7B-Instruct-v0.2(f16).llamafile"
+LLAMAFILE_PATH="$WORKING_DIR/mistralai.Mistral-7B-Instruct-v0.2(f16).llamafile"
 
 # variables
 TEMPERATURE=0

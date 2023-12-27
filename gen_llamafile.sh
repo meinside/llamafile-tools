@@ -96,7 +96,8 @@ function prep_tools {
 # $1: model id of HuggingFace
 function download_hf_model {
     model_id="$1"
-    gguf_filepath="$WORKING_DIR/$(basename "$model_id").gguf"
+    gguf_filename="$(dirname "$model_id").$(basename "$model_id")"
+    gguf_filepath="$WORKING_DIR/$gguf_filename.gguf"
 
     if [ -f "$gguf_filepath" ]; then
         warn "# reusing already-converted gguf file: $gguf_filepath, skipping downloading..."
@@ -104,7 +105,7 @@ function download_hf_model {
         mkdir -p "$HF_MODELS_DIR"
 
         model_id="$1"
-        model_dir="$HF_MODELS_DIR/$(dirname "$model_id").$(basename "$model_id")"
+        model_dir="$HF_MODELS_DIR/$gguf_filename"
 
         info "# creating $DOWNLOAD_SCRIPT_FILEPATH with model id: ${model_id}, dir: ${model_dir}..." && \
             cat <<EOF > "$DOWNLOAD_SCRIPT_FILEPATH"
@@ -127,12 +128,13 @@ EOF
 # $1: model id of HuggingFace
 function convert_hf_model_to_gguf {
     model_id="$1"
-    gguf_filepath="$WORKING_DIR/$(basename "$model_id").gguf"
+    gguf_filename="$(dirname "$model_id").$(basename "$model_id")"
+    gguf_filepath="$WORKING_DIR/$gguf_filename.gguf"
 
     if [ -f "$gguf_filepath" ]; then
         warn "# reusing already-converted gguf file: $gguf_filepath, skipping converting..."
     else
-        model_dir="$HF_MODELS_DIR/$(dirname "$model_id").$(basename "$model_id")"
+        model_dir="$HF_MODELS_DIR/$gguf_filename"
 
         info "# converting HuggingFace model files at $model_dir..." && \
             python "$CONVERT_SCRIPT_FILEPATH" "$model_dir" --outfile "$gguf_filepath" --outtype "$OUTTYPE"
@@ -145,9 +147,9 @@ function convert_hf_model_to_gguf {
 function build_llamafile_with_llamafile {
     model_id="$1"
     model_dir="$HF_MODELS_DIR/$(dirname "$model_id").$(basename "$model_id")"
-    gguf_filename="$(basename "$model_id").gguf"
-    gguf_filepath="$WORKING_DIR/$gguf_filename"
-    llamafile_path="$WORKING_DIR/$(basename "$model_id")($OUTTYPE).llamafile"
+    gguf_filename="$(dirname "$model_id").$(basename "$model_id")"
+    gguf_filepath="$WORKING_DIR/$gguf_filename.gguf"
+    llamafile_path="$WORKING_DIR/$gguf_filename($OUTTYPE).llamafile"
 
     info "# creating .args file at $ARGS_FILEPATH..." && \
         cat <<EOF > "$ARGS_FILEPATH"
