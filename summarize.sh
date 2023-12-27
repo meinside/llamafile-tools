@@ -4,9 +4,6 @@
 #
 # Summarizes given text in Korean, with 'llamafile'
 #
-# * Referenced:
-#   - https://justine.lol/oneliners/
-#
 # created on : 2023.12.20.
 # last update: 2023.12.27.
 

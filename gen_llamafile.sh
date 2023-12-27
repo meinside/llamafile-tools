@@ -7,10 +7,6 @@
 # * Tested on:
 #   - macOS Sonoma + Python 3.11.7
 #
-# * Referenced:
-#   - https://dev.to/timesurgelabs/llamafile-ai-integration-deployment-made-easy-44cg
-#   - https://www.substratus.ai/blog/converting-hf-model-gguf-model/
-#
 # created on : 2023.12.19.
 # last update: 2023.12.27.
 
