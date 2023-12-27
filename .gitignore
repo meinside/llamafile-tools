@@ -1,0 +1,6 @@
+*.llamafile
+*.gguf
+*.log
+hf_models/
+llamafile_tools/
+tmp/
