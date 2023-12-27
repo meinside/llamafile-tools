@@ -11,7 +11,8 @@
 # last update: 2023.12.27.
 
 # llamafile path
-SUMMARIZER_LLAMAFILE_PATH="$(dirname "$0")/Mistral-7B-Instruct-v0.2(f16).llamafile"
+WORKING_DIR="$(readlink -f "$(dirname "$0")")"
+SUMMARIZER_LLAMAFILE_PATH="$WORKING_DIR/Mistral-7B-Instruct-v0.2(f16).llamafile"
 
 # variables
 TEMPERATURE=0

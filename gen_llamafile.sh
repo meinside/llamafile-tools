@@ -57,7 +57,7 @@ function warn {
     echo -e "${YELLOW}$1${RESET}"
 }
 
-WORKING_DIR="$(dirname "$0")"
+WORKING_DIR="$(readlink -f "$(dirname "$0")")"
 TOOLS_DIRNAME="llamafile_tools"
 HF_MODELS_DIRNAME="hf_models"
 TOOLS_DIR="$WORKING_DIR/$TOOLS_DIRNAME"
