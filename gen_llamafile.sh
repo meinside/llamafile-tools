@@ -19,13 +19,13 @@ umask 0022
 #
 # variables for customization
 
-#OUTTYPE="f32"
-OUTTYPE="f16"
-#OUTTYPE="q8_0"
-#OUTTYPE="q4_0"
+#outtype="f32"
+outtype="f16"
+#outtype="q8_0"
+#outtype="q4_0"
 
-#BUILD_WITH_WEBSERVER="true"
-BUILD_WITH_WEBSERVER="false"
+#build_with_webserver="true"
+build_with_webserver="false"
 
 #
 ################################
@@ -52,6 +52,34 @@ function info {
 function warn {
     echo -e "${YELLOW}$1${RESET}"
 }
+
+# check for outtype argument (default: "f16")
+for arg in "$@"; do
+    case "$arg" in
+    -f32 | --f32 )
+        outtype="f32"
+        break
+        ;;
+    -q80 | --q8_0 )
+        outtype="q8_0"
+        break
+        ;;
+    -q40 | --q4_0 )
+        outtype="q4_0"
+        break
+        ;;
+    esac
+done
+
+# check for build_with_webserver argument (default: "false")
+for arg in "$@"; do
+    case "$arg" in
+    -w | --webserver )
+        build_with_webserver="true"
+        break
+        ;;
+    esac
+done
 
 WORKING_DIR="$(readlink -f "$(dirname "$0")")"
 TOOLS_DIRNAME="llamafile_tools"
@@ -104,7 +132,6 @@ function download_hf_model {
     else
         mkdir -p "$HF_MODELS_DIR"
 
-        model_id="$1"
         model_dir="$HF_MODELS_DIR/$gguf_filename"
 
         info "# creating $DOWNLOAD_SCRIPT_FILEPATH with model id: ${model_id}, dir: ${model_dir}..." && \
@@ -137,7 +164,7 @@ function convert_hf_model_to_gguf {
         model_dir="$HF_MODELS_DIR/$gguf_filename"
 
         info "# converting HuggingFace model files at $model_dir..." && \
-            python "$CONVERT_SCRIPT_FILEPATH" "$model_dir" --outfile "$gguf_filepath" --outtype "$OUTTYPE"
+            python "$CONVERT_SCRIPT_FILEPATH" "$model_dir" --outfile "$gguf_filepath" --outtype "$outtype"
     fi
 }
 
@@ -146,15 +173,14 @@ function convert_hf_model_to_gguf {
 # $1: model id of HuggingFace
 function build_llamafile_with_llamafile {
     model_id="$1"
-    model_dir="$HF_MODELS_DIR/$(dirname "$model_id").$(basename "$model_id")"
     gguf_filename="$(dirname "$model_id").$(basename "$model_id")"
     gguf_filepath="$WORKING_DIR/$gguf_filename.gguf"
-    llamafile_path="$WORKING_DIR/$gguf_filename($OUTTYPE).llamafile"
+    llamafile_path="$WORKING_DIR/$gguf_filename($outtype).llamafile"
 
     info "# creating .args file at $ARGS_FILEPATH..." && \
         cat <<EOF > "$ARGS_FILEPATH"
 -m
-$gguf_filename
+$gguf_filename.gguf
 ...
 EOF
 
@@ -169,15 +195,14 @@ EOF
 # $1: model id of HuggingFace
 function build_llamafile_with_llamafile_server {
     model_id="$1"
-    model_dir="$HF_MODELS_DIR/$(dirname "$model_id").$(basename "$model_id")"
-    gguf_filename="$(basename "$model_id").gguf"
-    gguf_filepath="$WORKING_DIR/$gguf_filename"
-    llamafile_path="$WORKING_DIR/$(basename "$model_id")($OUTTYPE).llamafile"
+    gguf_filename="$(dirname "$model_id").$(basename "$model_id")"
+    gguf_filepath="$WORKING_DIR/$gguf_filename.gguf"
+    llamafile_path="$WORKING_DIR/$gguf_filename($outtype).llamafile"
 
     info "# creating .args file at $ARGS_FILEPATH..." && \
         cat <<EOF > "$ARGS_FILEPATH"
 -m
-$gguf_filename
+$gguf_filename.gguf
 --host
 0.0.0.0
 ...
@@ -195,7 +220,7 @@ EOF
 function build_llamafile {
     model_id="$1"
 
-    if [ "$BUILD_WITH_WEBSERVER" == "true" ]; then
+    if [ "$build_with_webserver" == "true" ]; then
         build_llamafile_with_llamafile_server "$model_id"
     else
         build_llamafile_with_llamafile "$model_id"
