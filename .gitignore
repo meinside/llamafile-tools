@@ -1,6 +1,8 @@
 *.llamafile
 *.gguf
 *.log
+.args
+*.py
 hf_models/
 llamafile_tools/
 tmp/

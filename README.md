@@ -2,7 +2,8 @@
 
 My tools and scripts for generating & using `Llamafile`s.
 
-* `gen_llamafile.sh`: generates a llamafile with given HuggingFace model
+* `hf2llamafile.sh`: generates a llamafile with given HuggingFace model id
+* `gguf2llamafile.sh`: generates a llamafile with an existing .gguf file
 
 * helper scripts
   * `answer.sh`: answers given text

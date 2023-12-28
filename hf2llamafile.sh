@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #
-# gen_llamafile.sh
+# hf2llamafile.sh
 #
-# For building llamafiles easily, repeatedly.
+# For building llamafiles from HuggingFace model id
 #
 # * Tested on:
 #   - macOS Sonoma + Python 3.11.7
 #
 # created on : 2023.12.19.
-# last update: 2023.12.27.
+# last update: 2023.12.28.
 
 
 # XXX - for making newly created files/directories less restrictive
@@ -236,10 +236,14 @@ function clean {
 #
 # $1: model id of HuggingFace
 function do_things {
+    model_id="$1"
+
+    warn "# doing things with HuggingFace model id: $model_id ..."
+
     prep_tools && \
-        download_hf_model "$1" && \
-        convert_hf_model_to_gguf "$1" && \
-        build_llamafile "$1" && \
+        download_hf_model "$model_id" && \
+        convert_hf_model_to_gguf "$model_id" && \
+        build_llamafile "$model_id" && \
         clean
 }
 
