@@ -5,11 +5,11 @@
 # Summarizes given text in Korean, with 'llamafile'
 #
 # created on : 2023.12.20.
-# last update: 2023.12.27.
+# last update: 2024.01.04.
 
 # llamafile path
 WORKING_DIR="$(readlink -f "$(dirname "$0")")"
-LLAMAFILE_PATH="$WORKING_DIR/mistralai.Mistral-7B-Instruct-v0.2(f16).llamafile"
+LLAMAFILE_PATH="$WORKING_DIR/mixtral-8x7b-instruct-v0.1.Q3_K_M.llamafile"
 
 # variables
 TEMPERATURE=0

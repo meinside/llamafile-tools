@@ -8,7 +8,7 @@
 #   - macOS Sonoma + Python 3.11.7
 #
 # created on : 2023.12.19.
-# last update: 2023.12.28.
+# last update: 2024.01.04.
 
 
 # XXX - for making newly created files/directories less restrictive
@@ -24,8 +24,8 @@ outtype="f16"
 #outtype="q8_0"
 #outtype="q4_0"
 
-#build_with_webserver="true"
-build_with_webserver="false"
+#open_webbrowser="true"
+open_webbrowser="false"
 
 #
 ################################
@@ -71,11 +71,11 @@ for arg in "$@"; do
     esac
 done
 
-# check for build_with_webserver argument (default: "false")
+# check for `open_webbrowser` argument (default: "false")
 for arg in "$@"; do
     case "$arg" in
-    -w | --webserver )
-        build_with_webserver="true"
+    -w | --webbrowser )
+        open_webbrowser="true"
         break
         ;;
     esac
@@ -177,8 +177,14 @@ function build_llamafile_with_llamafile {
     gguf_filepath="$WORKING_DIR/$gguf_filename.gguf"
     llamafile_path="$WORKING_DIR/$gguf_filename($outtype).llamafile"
 
+    cli_only=""
+    if [ "$open_webbrowser" != "true" ]; then
+        cli_only="--cli"
+    fi
+
     info "# creating .args file at $ARGS_FILEPATH..." && \
         cat <<EOF > "$ARGS_FILEPATH"
+$cli_only
 -m
 $gguf_filename.gguf
 ...
@@ -190,41 +196,13 @@ EOF
         chmod +x "$llamafile_path"
 }
 
-# build llamafile with `llamafile-server`, .gguf, and .args files
-#
-# $1: model id of HuggingFace
-function build_llamafile_with_llamafile_server {
-    model_id="$1"
-    gguf_filename="$(dirname "$model_id").$(basename "$model_id")"
-    gguf_filepath="$WORKING_DIR/$gguf_filename.gguf"
-    llamafile_path="$WORKING_DIR/$gguf_filename($outtype).llamafile"
-
-    info "# creating .args file at $ARGS_FILEPATH..." && \
-        cat <<EOF > "$ARGS_FILEPATH"
--m
-$gguf_filename.gguf
---host
-0.0.0.0
-...
-EOF
-
-    info "# building llamafile with 'llamafile-server', $gguf_filename, and .args..." && \
-        cp "$LLAMAFILE_BIN_DIR/llamafile-server" "$llamafile_path" && \
-        "$LLAMAFILE_BIN_DIR/zipalign" -j0 "$llamafile_path" "$gguf_filepath" "$ARGS_FILEPATH" && \
-        chmod +x "$llamafile_path"
-}
-
 # build llamafile with .gguf and .args files
 #
 # $1: model id of HuggingFace
 function build_llamafile {
     model_id="$1"
 
-    if [ "$build_with_webserver" == "true" ]; then
-        build_llamafile_with_llamafile_server "$model_id"
-    else
-        build_llamafile_with_llamafile "$model_id"
-    fi
+    build_llamafile_with_llamafile "$model_id"
 }
 
 function clean {

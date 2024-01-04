@@ -8,7 +8,7 @@
 #   - macOS Sonoma + Python 3.11.7
 #
 # created on : 2023.12.28.
-# last update: 2023.12.28.
+# last update: 2024.01.04.
 
 
 # XXX - for making newly created files/directories less restrictive
@@ -19,8 +19,8 @@ umask 0022
 #
 # variables for customization
 
-#build_with_webserver="true"
-build_with_webserver="false"
+#open_webbrowser="true"
+open_webbrowser="false"
 
 #
 ################################
@@ -48,11 +48,11 @@ function warn {
     echo -e "${YELLOW}$1${RESET}"
 }
 
-# check for build_with_webserver argument (default: "false")
+# check for `open_webbrowser` argument (default: "false")
 for arg in "$@"; do
     case "$arg" in
-    -w | --webserver )
-        build_with_webserver="true"
+    -w | --webbrowser )
+        open_webbrowser="true"
         break
         ;;
     esac
@@ -96,8 +96,14 @@ function build_llamafile_with_llamafile {
     gguf_filename="$(basename "${gguf_filepath%.*}")"
     llamafile_path="$WORKING_DIR/$gguf_filename.llamafile"
 
+    cli_only=""
+    if [ "$open_webbrowser" != "true" ]; then
+        cli_only="--cli"
+    fi
+
     info "# creating .args file at $ARGS_FILEPATH..." && \
         cat <<EOF > "$ARGS_FILEPATH"
+$cli_only
 -m
 $gguf_filename.gguf
 ...
@@ -109,40 +115,13 @@ EOF
         chmod +x "$llamafile_path"
 }
 
-# build llamafile with `llamafile-server`, .gguf, and .args files
-#
-# $1: .gguf filepath
-function build_llamafile_with_llamafile_server {
-    gguf_filepath="$1"
-    gguf_filename="$(basename "${gguf_filepath%.*}")"
-    llamafile_path="$WORKING_DIR/$gguf_filename.llamafile"
-
-    info "# creating .args file at $ARGS_FILEPATH..." && \
-        cat <<EOF > "$ARGS_FILEPATH"
--m
-$gguf_filename.gguf
---host
-0.0.0.0
-...
-EOF
-
-    info "# building llamafile with 'llamafile-server', $gguf_filepath, and .args..." && \
-        cp "$LLAMAFILE_BIN_DIR/llamafile-server" "$llamafile_path" && \
-        "$LLAMAFILE_BIN_DIR/zipalign" -j0 "$llamafile_path" "$gguf_filepath" "$ARGS_FILEPATH" && \
-        chmod +x "$llamafile_path"
-}
-
 # build llamafile with .gguf and .args files
 #
 # $1: .gguf filepath
 function build_llamafile {
     gguf_filepath="$1"
 
-    if [ "$build_with_webserver" == "true" ]; then
-        build_llamafile_with_llamafile_server "$gguf_filepath"
-    else
-        build_llamafile_with_llamafile "$gguf_filepath"
-    fi
+    build_llamafile_with_llamafile "$gguf_filepath"
 }
 
 function clean {
