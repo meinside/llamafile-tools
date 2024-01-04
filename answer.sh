@@ -66,9 +66,14 @@ done
 # $1: text to answer
 function do_answer {
     text="$1"
-    text=${text//\"/”} # replace double quotes with unicode strings
+
+    # replace double quotes with unicode strings
+    text=${text//\"/”}
 
     cmd="$LLAMAFILE_PATH -p \"[INST]다음에 대하여 한국어로 응답하시오: ${text}[/INST]\" --temp $TEMPERATURE -n $TOKENS_PREDICT -c $PROMPT_CONTEXT_SIZE --silent-prompt 2> /dev/null"
+    # escape parenthesis before `eval`
+    cmd=${cmd//\(/\\(}
+    cmd=${cmd//\)/\\)}
 
     if [ "$verbose" == "true" ]; then
         error "[VERBOSE] will run command: \"$cmd\""

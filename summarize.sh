@@ -64,9 +64,14 @@ done
 # $1: text to summarize
 function do_summarization {
     text="$1"
-    text=${text//\"/”} # replace double quotes with unicode strings
+
+    # replace double quotes with unicode strings
+    text=${text//\"/”}
 
     cmd="$LLAMAFILE_PATH -p \"[INST]다음을 한국어로만 짧고 간단하게, 부연설명 없이 요약해 주세요: ${text}[/INST]\" --temp $TEMPERATURE -n $TOKENS_PREDICT -c $PROMPT_CONTEXT_SIZE --silent-prompt 2> /dev/null"
+    # escape parenthesis before `eval`
+    cmd=${cmd//\(/\\(}
+    cmd=${cmd//\)/\\)}
 
     if [ "$verbose" == "true" ]; then
         error "[VERBOSE] will run command: \"$cmd\""
