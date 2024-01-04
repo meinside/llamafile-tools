@@ -228,10 +228,10 @@ function do_things {
 # print usage
 function print_usage {
     info "Usage:"
-    warn "  $ $0 [HUGGING_FACE_MODEL_ID]"
+    warn "  $ $0 [HUGGING_FACE_MODEL_ID] [OTHER_PARAMETERS...]"
     info ""
     info "Example:"
-    warn "  $ $0 meta-llama/Llama-2-7b"
+    warn "  $ $0 meta-llama/Llama-2-7b -q80 -w"
 }
 
 #

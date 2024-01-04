@@ -145,10 +145,10 @@ function do_things {
 # print usage
 function print_usage {
     info "Usage:"
-    warn "  $ $0 [GGUF_FILEPATH]"
+    warn "  $ $0 [GGUF_FILEPATH] [OTHER_PARAMETERS...]"
     info ""
     info "Example:"
-    warn "  $ $0 ./mixtral-8x7b-instruct-v0.1.Q4_0.gguf"
+    warn "  $ $0 ./mixtral-8x7b-instruct-v0.1.Q4_0.gguf -w"
 }
 
 #

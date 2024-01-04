@@ -11,11 +11,24 @@
 WORKING_DIR="$(readlink -f "$(dirname "$0")")"
 LLAMAFILE_PATH="$WORKING_DIR/mixtral-8x7b-instruct-v0.1.Q3_K_M.llamafile"
 
+
+################################
+#
+# variables for customization
+
 # variables
 TEMPERATURE=0
 TOKENS_PREDICT=500
 PROMPT_CONTEXT_SIZE=6700
 
+#
+################################
+
+
+
+################################
+#
+# common functions and constants
 
 # colors
 RED="\033[0;31m"
@@ -34,11 +47,31 @@ function warn {
     echo -e "${YELLOW}$1${RESET}"
 }
 
+# check for `verbose` argument (default: "false")
+for arg in "$@"; do
+    case "$arg" in
+    -v | --verbose )
+        verbose="true"
+        break
+        ;;
+    esac
+done
+
+#
+################################
+
 
 # $1: text to summarize
 function do_summarization {
     text="$1"
-    result=$($LLAMAFILE_PATH -p "[INST]다음을 한국어로만 짧고 간단하게, 부연설명 없이 요약해 주세요: ${text}[/INST]" --temp $TEMPERATURE -n $TOKENS_PREDICT -c $PROMPT_CONTEXT_SIZE --silent-prompt 2> /dev/null)
+    text=${text//\"/”} # replace double quotes with unicode strings
+
+    cmd="$LLAMAFILE_PATH -p \"[INST]다음을 한국어로만 짧고 간단하게, 부연설명 없이 요약해 주세요: ${text}[/INST]\" --temp $TEMPERATURE -n $TOKENS_PREDICT -c $PROMPT_CONTEXT_SIZE --silent-prompt 2> /dev/null"
+
+    if [ "$verbose" == "true" ]; then
+        error "[VERBOSE] will run command: \"$cmd\""
+    fi
+    result=$(eval "$cmd")
 
     info ">>>"
     info "$result"
@@ -46,7 +79,7 @@ function do_summarization {
 
 function print_usage {
     info "Usage:"
-    warn "  $ $0 [TEXT_TO_SUMMARIZE]"
+    warn "  $ $0 [TEXT_TO_SUMMARIZE] [OTHER_PARAMETERS...]"
     info ""
     info "Example:"
     warn "  $ $0 \"파이트 클럽 규칙:
@@ -57,13 +90,13 @@ function print_usage {
 제5조: 한 번에 한 판만 벌인다.
 제6조: 상의와 신발은 벗는다.
 제7조: 싸울 수 있을 때까지 싸운다.
-제8조: 여기 처음 온 사람은 반드시 싸운다.\""
+제8조: 여기 처음 온 사람은 반드시 싸운다.\" -v"
 }
 
 
 # (main)
 if [ ! -x "$LLAMAFILE_PATH" ]; then
-    echo "Llamafile not found, or not executable: $LLAMAFILE_PATH"
+    error "Llamafile not found, or not executable: $LLAMAFILE_PATH"
     exit 1
 fi
 if [ $# -ge 1 ]; then
