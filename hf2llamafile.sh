@@ -8,7 +8,7 @@
 #   - macOS Sonoma + Python 3.11.7
 #
 # created on : 2023.12.19.
-# last update: 2024.01.04.
+# last update: 2024.02.23.
 
 
 # XXX - for making newly created files/directories less restrictive
@@ -18,6 +18,8 @@ umask 0022
 ################################
 #
 # variables for customization
+
+LLAMAFILE_VERSION="0.6.2"
 
 #outtype="f32"
 outtype="f16"
@@ -116,6 +118,7 @@ function prep_tools {
         chmod +x "$GMAKE_FILEPATH" && \
         (git clone "https://github.com/Mozilla-Ocho/llamafile.git" "$LLAMAFILE_DIR" || true) && \
         cd "$LLAMAFILE_DIR" && \
+        git checkout "$LLAMAFILE_VERSION" && \
         "$GMAKE_FILEPATH" -j$(nproc) install PREFIX="$LLAMAFILE_COMPILED_DIR"
 }
 
