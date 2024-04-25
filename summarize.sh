@@ -5,11 +5,11 @@
 # Summarizes given text in Korean, with 'llamafile'
 #
 # created on : 2023.12.20.
-# last update: 2024.01.04.
+# last update: 2024.04.25.
 
 # llamafile path
 WORKING_DIR="$(readlink -f "$(dirname "$0")")"
-LLAMAFILE_PATH="$WORKING_DIR/mixtral-8x7b-instruct-v0.1.Q3_K_M.llamafile"
+LLAMAFILE_PATH="$WORKING_DIR/Meta-Llama-3-8B-Instruct.Q5_K_M.llamafile"
 
 
 ################################
@@ -68,7 +68,7 @@ function do_summarization {
     # replace double quotes with unicode strings
     text=${text//\"/”}
 
-    cmd="$LLAMAFILE_PATH -p \"[INST]다음을 한국어로만 짧고 간단하게, 부연설명 없이 요약해 주세요: ${text}[/INST]\" --temp $TEMPERATURE -n $TOKENS_PREDICT -c $PROMPT_CONTEXT_SIZE --silent-prompt 2> /dev/null"
+    cmd="$LLAMAFILE_PATH -p \"User: 다음을 한국어로만 짧고 간단하게, 부연설명 없이 요약해 주세요: ${text}\nAssistant:\" --temp $TEMPERATURE -n $TOKENS_PREDICT -c $PROMPT_CONTEXT_SIZE --silent-prompt 2> /dev/null"
     # escape parenthesis before `eval`
     cmd=${cmd//\(/\\(}
     cmd=${cmd//\)/\\)}
