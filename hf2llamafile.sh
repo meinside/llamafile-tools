@@ -8,7 +8,7 @@
 #   - macOS Sonoma + Python 3.11.7
 #
 # created on : 2023.12.19.
-# last update: 2024.04.22.
+# last update: 2024.04.25.
 
 
 # XXX - for making newly created files/directories less restrictive
@@ -20,7 +20,7 @@ umask 0022
 # variables for customization
 
 # https://github.com/Mozilla-Ocho/llamafile/releases
-LLAMAFILE_VERSION="0.7.3"
+LLAMAFILE_VERSION="0.8"
 
 #outtype="f32"
 outtype="f16"
