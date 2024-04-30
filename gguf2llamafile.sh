@@ -5,7 +5,7 @@
 # For building llamafiles from an existing .gguf file
 #
 # * Tested on:
-#   - macOS Sonoma
+#   - macOS Sonoma + Python 3.11.7
 #
 # created on : 2023.12.28.
 # last update: 2024.04.30.
@@ -21,9 +21,6 @@ umask 0022
 
 # https://github.com/Mozilla-Ocho/llamafile/releases
 LLAMAFILE_VERSION="0.8.1"
-
-#open_webbrowser="true"
-open_webbrowser="false"
 
 #
 ################################
@@ -50,16 +47,6 @@ function info {
 function warn {
     echo -e "${YELLOW}$1${RESET}"
 }
-
-# check for `open_webbrowser` argument (default: "false")
-for arg in "$@"; do
-    case "$arg" in
-    -w | --webbrowser )
-        open_webbrowser="true"
-        break
-        ;;
-    esac
-done
 
 WORKING_DIR="$(readlink -f "$(dirname "$0")")"
 TOOLS_DIRNAME="llamafile_tools"
@@ -97,7 +84,8 @@ function prep_tools {
 function build_llamafile {
     gguf_filepath="$1"
 
-    "$LLAMAFILE_BIN_DIR/llamafile-convert" "$gguf_filepath"
+    cd "$WORKING_DIR" && \
+        "$LLAMAFILE_BIN_DIR/llamafile-convert" "$gguf_filepath"
 }
 
 # do the real things
