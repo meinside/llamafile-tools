@@ -5,10 +5,10 @@
 # For building llamafiles from an existing .gguf file
 #
 # * Tested on:
-#   - macOS Sonoma + Python 3.11.7
+#   - macOS Sonoma
 #
 # created on : 2023.12.28.
-# last update: 2024.04.25.
+# last update: 2024.04.30.
 
 
 # XXX - for making newly created files/directories less restrictive
@@ -20,7 +20,7 @@ umask 0022
 # variables for customization
 
 # https://github.com/Mozilla-Ocho/llamafile/releases
-LLAMAFILE_VERSION="0.8"
+LLAMAFILE_VERSION="0.8.1"
 
 #open_webbrowser="true"
 open_webbrowser="false"
@@ -68,7 +68,6 @@ LLAMAFILE_BIN_DIR="$TOOLS_DIR/llamafile/compiled/bin"
 GMAKE_FILEPATH="$TOOLS_DIR/gmake"
 LLAMAFILE_DIR="$TOOLS_DIR/llamafile"
 LLAMAFILE_COMPILED_DIR="$LLAMAFILE_DIR/compiled"
-ARGS_FILEPATH="$WORKING_DIR/.args"
 
 #
 ################################
@@ -92,45 +91,13 @@ function prep_tools {
         "$GMAKE_FILEPATH" -j$(nproc) install PREFIX="$LLAMAFILE_COMPILED_DIR"
 }
 
-# build llamafile with `llamafile`, .gguf, and .args files
-#
-# $1: .gguf filepath
-function build_llamafile_with_llamafile {
-    gguf_filepath="$1"
-    gguf_filename="$(basename "${gguf_filepath%.*}")"
-    llamafile_path="$WORKING_DIR/$gguf_filename.llamafile"
-
-    cli_only=""
-    if [ "$open_webbrowser" != "true" ]; then
-        cli_only="--cli"
-    fi
-
-    info "# creating .args file at $ARGS_FILEPATH..." && \
-        cat <<EOF > "$ARGS_FILEPATH"
-$cli_only
--m
-$gguf_filename.gguf
-...
-EOF
-
-    info "# building llamafile with 'llamafile', $gguf_filepath, and .args..." && \
-        cp "$LLAMAFILE_BIN_DIR/llamafile" "$llamafile_path" && \
-        "$LLAMAFILE_BIN_DIR/zipalign" -j0 "$llamafile_path" "$gguf_filepath" "$ARGS_FILEPATH" && \
-        chmod +x "$llamafile_path"
-}
-
-# build llamafile with .gguf and .args files
+# build llamafile with .gguf file
 #
 # $1: .gguf filepath
 function build_llamafile {
     gguf_filepath="$1"
 
-    build_llamafile_with_llamafile "$gguf_filepath"
-}
-
-function clean {
-    info "# deleting temporary files..." && \
-        rm -f "$ARGS_FILEPATH"
+    "$LLAMAFILE_BIN_DIR/llamafile-convert" "$gguf_filepath"
 }
 
 # do the real things
@@ -142,17 +109,16 @@ function do_things {
     warn "# doing things with gguf filepath: $gguf_filepath ..."
 
     prep_tools && \
-        build_llamafile "$gguf_filepath" && \
-        clean
+        build_llamafile "$gguf_filepath"
 }
 
 # print usage
 function print_usage {
     info "Usage:"
-    warn "  $ $0 [GGUF_FILEPATH] [OTHER_PARAMETERS...]"
+    warn "  $ $0 [GGUF_FILEPATH]"
     info ""
     info "Example:"
-    warn "  $ $0 ./mixtral-8x7b-instruct-v0.1.Q4_0.gguf -w"
+    warn "  $ $0 ./mixtral-8x7b-instruct-v0.1.Q4_0.gguf"
 }
 
 #
