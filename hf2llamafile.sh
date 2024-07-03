@@ -8,7 +8,7 @@
 #   - macOS Sonoma + Python 3.11.7
 #
 # created on : 2023.12.19.
-# last update: 2024.04.30.
+# last update: 2024.07.03.
 
 
 # XXX - for making newly created files/directories less restrictive
@@ -20,7 +20,7 @@ umask 0022
 # variables for customization
 
 # https://github.com/Mozilla-Ocho/llamafile/releases
-LLAMAFILE_VERSION="0.8.1"
+LLAMAFILE_VERSION="0.8.9"
 
 #outtype="f32"
 outtype="f16"
@@ -93,7 +93,7 @@ DOWNLOAD_SCRIPT_FILEPATH="$WORKING_DIR/download.py"
 LLAMACPP_DIR="$TOOLS_DIR/llama.cpp"
 LLAMAFILE_BIN_DIR="$TOOLS_DIR/llamafile/compiled/bin"
 GMAKE_FILEPATH="$TOOLS_DIR/gmake"
-CONVERT_SCRIPT_FILEPATH="$TOOLS_DIR/llama.cpp/convert.py"
+CONVERT_SCRIPT_FILEPATH="$TOOLS_DIR/llama.cpp/convert-hf-to-gguf.py"
 LLAMAFILE_DIR="$TOOLS_DIR/llamafile"
 LLAMAFILE_COMPILED_DIR="$LLAMAFILE_DIR/compiled"
 ARGS_FILEPATH="$WORKING_DIR/.args"
